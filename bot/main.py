@@ -1,7 +1,9 @@
 from shop import Shop
 
 def main():
-    Shop()
+    shop = Shop()
+    chosenStore = shop.getStore()
+    chosenStore.main()
 
 
 if __name__ == '__main__':

@@ -16,6 +16,9 @@ class AdidasShop:
         shoe_size = input("What is the size?")
 
 
+    def main():
+        print("done")
+
     def __init__(self):
         print("AdidasShop initialized")
 

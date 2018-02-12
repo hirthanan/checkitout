@@ -3,6 +3,7 @@ from shop import Shop
 def main():
     shop = Shop()
     chosenStore = shop.getStore()
+
     chosenStore.main()
 
 

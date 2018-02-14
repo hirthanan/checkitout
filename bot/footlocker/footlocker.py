@@ -20,26 +20,35 @@ class FootlockerShop:
 
 
     def getItem(self, soup, item):
-        shoe = soup.find_all('div', title=lambda x: x and item in x)
-        return shoe
+        items = {}
+        potential_items = soup.find_all('div', title=lambda x: x and item in x)
+        for item in potential_items:
+            print(item)
+        # print potential_items
 
 
     def releaseCalendar(self):
         newly_released_url = "http://www.footlocker.ca/en-CA/releasecalendarca"
 
-        browser = webdriver.Firefox()
         print("Getting details of shoe listings")
-        browser.get(newly_released_url)
+        try:
+            browser = webdriver.Firefox()
+            browser.get(newly_released_url)
 
-        html = browser.page_source
-        soup = bs(html, "lxml")
+            html = browser.page_source
+            soup = bs(html, "lxml")
 
-        self.getItem(soup, 'Jordan Retro 1 High')
+            self.getItem(soup, 'Jordan Retro 1 High', "ASdas")
+        except Exception, e:
+            print("ERROR: " + str(e))
+
+        browser.quit()
+
 
         # Clean up bs4 html markup data
         # print soup.prettify()
 
-        browser.quit()
+
         return soup
 
 

@@ -19,12 +19,36 @@ class FootlockerShop:
         print("sku = " + str(sku))
 
 
-    def getItem(self, soup, item):
+    def chooseItem(self, items):
+        print items
+
+    def getItems(self, soup, item):
         items = {}
+        # {name: {
+        #     'sku': [],
+        #     'colors': [],
+        #     }
+        # }
         potential_items = soup.find_all('div', title=lambda x: x and item in x)
+
+        ''' Since items can have the same name but different colors,
+        we need to keep track of the different types of items '''
+
         for item in potential_items:
-            print(item)
-        # print potential_items
+            item_name = str(item["title"])
+            item_sku = int(item["data-skunumber"])
+
+            colorway = item.findAll(attrs={'class' : 'colorway'})
+            item_color = str(colorway[0].contents[0].strip())
+
+            if item_name not in items:
+                items[item_name] = {'sku':[item_sku], 'color':[item_color]}
+            else:
+                items[item_name]['sku'].append(item_sku)
+                items[item_name]['color'].append(item_color)
+
+        return items
+
 
 
     def releaseCalendar(self):
@@ -38,16 +62,12 @@ class FootlockerShop:
             html = browser.page_source
             soup = bs(html, "lxml")
 
-            self.getItem(soup, 'Jordan Retro 1 High', "ASdas")
+            items = self.getItems(soup, 'Jordan')
+            item = self.chooseItem(items)
         except Exception, e:
             print("ERROR: " + str(e))
 
         browser.quit()
-
-
-        # Clean up bs4 html markup data
-        # print soup.prettify()
-
 
         return soup
 

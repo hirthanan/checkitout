@@ -19,21 +19,34 @@ class FootlockerShop:
         print("sku = " + str(sku))
 
 
+    ''' returns chosen items associated sku-number '''
     def chooseItem(self, items):
-        print items
+        print("Verify the item number that you were interested in automagically buying")
+        itemArr = list(items.keys())
+        for idx, item in enumerate(itemArr):
+            print(str(idx+1) + ". " + item)
+        num = input("# => ")
+        verified_name = itemArr[num-1]
+
+        print("Verify the color of the item that you were interested in automagically buying")
+        colorArr = items[verified_name]['color']
+        for idx, color in enumerate(colorArr):
+            print(str(idx+1) + ". " + color)
+        num = input("# => ")
+        verified_sku = items[verified_name]['sku'][num-1]
+
+        print verified_sku
+        return verified_sku
+
+
 
     def getItems(self, soup, item):
-        items = {}
-        # {name: {
-        #     'sku': [],
-        #     'colors': [],
-        #     }
-        # }
+        items = {} # each item will be formatted, {'name': {'sku':[vals], 'color':[vals]}}
+
         potential_items = soup.find_all('div', title=lambda x: x and item in x)
 
         ''' Since items can have the same name but different colors,
         we need to keep track of the different types of items '''
-
         for item in potential_items:
             item_name = str(item["title"])
             item_sku = int(item["data-skunumber"])

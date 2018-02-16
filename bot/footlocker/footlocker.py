@@ -48,7 +48,9 @@ class FootlockerShop:
         ''' Since items can have the same name but different colors,
         we need to keep track of the different types of items '''
         for item in potential_items:
-            item_name = str(item["title"])
+            productName = item.findAll(attrs={'class' : 'productName'})
+            item_name = str(productName[0].contents[0].strip())
+
             item_sku = int(item["data-skunumber"])
 
             colorway = item.findAll(attrs={'class' : 'colorway'})
@@ -76,7 +78,7 @@ class FootlockerShop:
             soup = bs(html, "lxml")
 
             items = self.getItems(soup, 'Jordan')
-            item = self.chooseItem(items)
+            # item = self.chooseItem(items)
         except Exception, e:
             print("ERROR: " + str(e))
 

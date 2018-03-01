@@ -19,22 +19,21 @@ class FootlockerShop:
         return url
 
     ''' Using regex, finds the requestKey in html '''
-    def getRequestKey(self, htmlstr):
-        # print htmlstr
-        found = ""
-        m = re.search('inStoreAvailability_panel.requestKey = "(.+?)";', htmlstr)
+    def getRequestKey(self, soup):
+        keys = soup.find_all("input",attrs={"id": "requestKey"})
 
-        if m:
-            found = m.group(1)
+        # check if keys list is empty
+        if keys:
+            reqKey = keys[0]["value"]
         else:
             '''
 
-            this is where the timely requests to preorder shoes will be made
+            THIS IS WHERE THE TIMELY REQUESTS TO PREORDER ITEMS WILL BE MADE
 
             '''
             raise Exception('The item you have chosen has not been released yet! Try again later.')
 
-        return found
+        return reqKey
 
     ''' returns chosen items associated sku-number '''
     def getSku(self, items):
@@ -52,7 +51,6 @@ class FootlockerShop:
         num = input("# => ")
         verified_sku = items[verified_name]['sku'][num-1]
 
-        print verified_sku
         return verified_sku
 
 
@@ -108,11 +106,9 @@ class FootlockerShop:
         productUrl = self.genUrl(sku)
 
         soup = self.soupify(productUrl)
-        requestKey = self.getRequestKey(str(soup))
+        requestKey = self.getRequestKey(soup)
 
         print requestKey
-
-
 
 
         # headers = requests.utils.default_headers()

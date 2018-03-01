@@ -1,5 +1,7 @@
+import re
 from selenium import webdriver
 from bs4 import BeautifulSoup as bs
+
 
 class FootlockerShop:
 
@@ -7,6 +9,7 @@ class FootlockerShop:
         print("FootlockerShop Initialized")
         print("While running")
         self.request_key = None
+        self.browser = None
 
 
     '''URL only needs a sku number for product of interest
@@ -15,6 +18,23 @@ class FootlockerShop:
         url = "http://www.footlocker.ca/en-CA/product/sku:" + str(sku)
         return url
 
+    ''' Using regex, finds the requestKey in html '''
+    def getRequestKey(self, htmlstr):
+        # print htmlstr
+        found = ""
+        m = re.search('inStoreAvailability_panel.requestKey = "(.+?)";', htmlstr)
+
+        if m:
+            found = m.group(1)
+        else:
+            '''
+
+            this is where the timely requests to preorder shoes will be made
+
+            '''
+            raise Exception('The item you have chosen has not been released yet! Try again later.')
+
+        return found
 
     ''' returns chosen items associated sku-number '''
     def getSku(self, items):
@@ -61,6 +81,14 @@ class FootlockerShop:
 
         return items
 
+    ''' given web url, return page source html '''
+    def soupify(self, url):
+        self.browser.get(url)
+        html = self.browser.page_source
+        soup = bs(html, 'lxml')
+
+        return soup
+
 
     ''' Looks through release calendar of all items and
     finds the exact SKU (id) number of your inputted item '''
@@ -68,45 +96,64 @@ class FootlockerShop:
         newly_released_url = "http://www.footlocker.ca/en-CA/releasecalendarca"
 
         print("Getting details of shoe listings")
-        try:
-            browser = webdriver.Firefox()
-            browser.get(newly_released_url)
+        soup = self.soupify(newly_released_url)
 
-            html = browser.page_source
-            soup = bs(html, "lxml")
-
-            # print soup.prettify()
-            # self.release_key = soup.find('input', {'id': 'requestKey'})['value']
-            # print self.release_key
-
-            items = self.getReleaseItems(soup, 'Jordan')
-            sku = self.getSku(items)
-        except Exception, e:
-            print("ERROR: " + str(e))
-
-        browser.quit()
+        items = self.getReleaseItems(soup, 'Jordan')
+        sku = self.getSku(items)
 
         return sku
 
     def addCart(self, sku):
         addToCartUrl = 'http://www.footlocker.ca/catalog/addToCart'
+        productUrl = self.genUrl(sku)
+
+        soup = self.soupify(productUrl)
+        requestKey = self.getRequestKey(str(soup))
+
+        print requestKey
+
+
+
 
         # headers = requests.utils.default_headers()
         # headers.update({'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'})
 
+        # payload = {
+        #     "Host": "www.mywbsite.fr",
+        #     "Connection": "keep-alive",
+        #     "Content-Length": 129,
+        #     "Origin": "https://www.mywbsite.fr",
+        #     "X-Requested-With": "XMLHttpRequest",
+        #     "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.52 Safari/536.5",
+        #     "Content-Type": "application/json",
+        #     "Accept": "*/*",
+        #     "Referer": "https://www.mywbsite.fr/data/mult.aspx",
+        #     "Accept-Encoding": "gzip,deflate,sdch",
+        #     "Accept-Language": "fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4",
+        #     "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.3",
+        #     "Cookie": "ASP.NET_SessionId=j1r1b2a2v2w245; GSFV=FirstVisit=; GSRef=https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CHgQFjAA&url=https://www.mywbsite.fr/&ei=FZq_T4abNcak0QWZ0vnWCg&usg=AFQjCNHq90dwj5RiEfr1Pw; HelpRotatorCookie=HelpLayerWasSeen=0; NSC_GSPOUGS!TTM=ffffffff09f4f58455e445a4a423660; GS=Site=frfr; __utma=1.219229010.1337956889.1337956889.1337958824.2; __utmb=1.1.10.1337958824; __utmc=1; __utmz=1.1337956889.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)"
+        # }
 
 
 
 
     def main(self):
 
-        itemSku = self.releaseCalendar()
-        success = self.addCart(itemSku)
+        try:
+            self.browser = webdriver.Firefox()
 
-        if success:
-            print ("Successfully added your item to your Cart")
-        else:
-            print ("Failed to add your item to your Cart")
+            itemSku = self.releaseCalendar()
+            success = self.addCart(itemSku)
+
+            if success:
+                print ("Successfully added your item to your Cart")
+            else:
+                print ("Failed to add your item to your Cart")
+
+        except Exception, e:
+            print("ERROR: " + str(e))
+
+        self.browser.quit()
 
 
 

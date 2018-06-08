@@ -33,6 +33,7 @@ class FootlockerShop:
         else:
             '''
 
+            *TODO*
             THIS IS WHERE THE TIMELY REQUESTS TO PREORDER ITEMS WILL BE MADE
 
             '''
@@ -115,6 +116,7 @@ class FootlockerShop:
 
     def addCart(self, item):
         addToCartUrl = 'http://www.footlocker.ca/catalog/miniAddToCart.cfm?secure=0&'
+        getCookieData = 'http://www.footlocker.ca/en-CA/product/model:229901/sku:6265115'
         sku = item['sku']
         model = item['model_num']
         productUrl = self.genUrl(sku, model)
@@ -133,6 +135,7 @@ class FootlockerShop:
                     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36',
                     'X-Requested-With': 'XMLHttpRequest',
                     'Origin': 'http://www.footlocker.ca'
+                    # 'Cookie': 'SSLC=web150'
                 }
 
         payload = {
@@ -148,37 +151,12 @@ class FootlockerShop:
             'the_model_nbr': model
         }
 
-        cookie = {'enwiki_session': '17ab96bd8ffbe8ca58a78657a918558'}
-
-        # payload = {
-        #     'coreMetricsCategory': 'blank',
-        #     'fulfillmentType': 'SHIP_TO_HOME',
-        #     'inlineAddToCart': '0,1',
-        #     'qty': '1',
-        #     'rdo_deliveryMethod': 'shiptohome',
-        #     'requestKey': requestKey,
-        #     'size': '06.5',
-        #     'sku': sku,
-        #     'storeCostOfGoods': '0.00',
-        #     'storeNumber': '00000',
-        #     'the_model_nbr': model
-        # }
-
-        # headers = {
-        #     'Accept': '*/*',
-        #     'Origin': 'http://www.footlocker.ca',
-        #     'X-Requested-With': 'XMLHttpRequest',
-        #     'Referer': productUrl,
-        #     'Accept-Encoding': 'gzip, deflate',
-        # }
-
         session = requests.Session()
 
         res = session.post(addToCartUrl, headers=headers, data=payload)
 
+
         print "status_code " + str(res.status_code)
-        print "payload " + str(payload)
-        print "headers " + str(headers)
 
         print res.text
         if res.status_code == 200:

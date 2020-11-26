@@ -12,8 +12,8 @@ class AdidasShop:
         #7   Sample Adidas Shoe URL: http://www.adidas.ca/en/mens-eqt-support-ultra-primeknit-king-push-shoes/DB0181_590.html?forceSelSize=DB0181_590
 
         baseUrl = "http://www.adidas.ca/en/"
-        shoe_type = raw_input("What is the model of the shoe you are purchasing?")
-        shoe_size = input("What is the size?")
+        shoe_type = input("What is the model of the shoe you are purchasing?")
+        shoe_size = eval(input("What is the size?"))
 
 
     def main():

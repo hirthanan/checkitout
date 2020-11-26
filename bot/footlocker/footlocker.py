@@ -7,6 +7,7 @@ from selenium import webdriver
 # beatifulsoup used to parse html
 from bs4 import BeautifulSoup as bs
 
+import time
 
 class FootlockerShop:
 
@@ -47,16 +48,16 @@ class FootlockerShop:
         itemArr = list(items.keys())
         for idx, item in enumerate(itemArr):
             print(str(idx+1) + ". " + item)
-        num = input("# => ")
+        num = eval(input("# => "))
         verified_name = itemArr[num-1]
 
         print("Verify the color of the item that you were interested in automagically checking")
         colorArr = items[verified_name]['color']
         for idx, color in enumerate(colorArr):
-            print(str(idx+1) + ". " + color)
-        num = input("# => ")
+            print((str(idx+1) + ". " + color))
+        num = eval(input("# => "))
         print("What is your Shoe Size? (i.e 09.0)")
-        self.shoeSize = input("# => ")
+        self.shoeSize = eval(input("# => "))
         verified_sku = items[verified_name]['sku'][num-1]
         verified_model = items[verified_name]['model_num'][num-1]
 
@@ -104,7 +105,7 @@ class FootlockerShop:
     ''' Looks through release calendar of all items and
     finds the exact SKU (id) number of your inputted item '''
     def releaseCalendar(self):
-        newly_released_url = "http://www.footlocker.ca/en-CA/releasecalendarca"
+        newly_released_url = "https://www.footlocker.ca/en/release-dates.html"
 
         print("Getting details of shoe listings")
         soup = self.soupify(newly_released_url)
@@ -156,9 +157,9 @@ class FootlockerShop:
         res = session.post(addToCartUrl, headers=headers, data=payload)
 
 
-        print "status_code " + str(res.status_code)
+        print("status_code " + str(res.status_code))
 
-        print res.text
+        print(res.text)
         if res.status_code == 200:
             return True
         return False
@@ -177,8 +178,8 @@ class FootlockerShop:
             else:
                 print ("Failed to add your item to your Cart")
 
-        except Exception, e:
-            print("ERROR: " + str(e))
+        except Exception as e:
+            print(("ERROR: " + str(e)))
 
         # self.browser.quit()
 

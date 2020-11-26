@@ -1,8 +1,8 @@
 from shop import Shop
 
 def main():
-    shop = Shop()
-    chosenStore = shop.getStore()
+    s = Shop()
+    chosenStore = s.getStore()
 
     chosenStore.main()
 
